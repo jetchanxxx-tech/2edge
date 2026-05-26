@@ -1,0 +1,5 @@
+{
+  "app": { "name": "2Edge", "slogan": "代理管理面板" },
+  "nav": { "dashboard": "概览", "subscription": "订阅", "traffic": "流量", "profile": "个人设置", "admin": "管理后台" },
+  "auth": { "login": "登录", "register": "注册", "logout": "退出登录", "email": "邮箱", "password": "密码" }
+}

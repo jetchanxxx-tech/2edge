@@ -1,0 +1,20 @@
+name = "2edge-api"
+main = "src/index.ts"
+compatibility_date = "2026-05-27"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "2edge-db"
+database_id = "7b5b8ccf-3d03-4e46-9db9-2e93b393679e"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "66e06a18b77941c3a404285d670123c6"
+
+[vars]
+JWT_SECRET = ""
+SITE_URL = "http://localhost:5173"
+ENVIRONMENT = "development"
+
+[dev]
+port = 8787

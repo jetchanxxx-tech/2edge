@@ -1,0 +1,21 @@
+name = "2edge-proxy"
+main = "src/index.js"
+compatibility_date = "2026-05-27"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "2edge-db"
+database_id = "7b5b8ccf-3d03-4e46-9db9-2e93b393679e"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "66e06a18b77941c3a404285d670123c6"
+
+[vars]
+PROXYIP = ""
+HOST = ""
+PATH = "/"
+DEBUG = "false"
+
+[dev]
+port = 8788

@@ -1,0 +1,5 @@
+{
+  "app": { "name": "2Edge", "slogan": "Proxy Management Panel" },
+  "nav": { "dashboard": "Dashboard", "subscription": "Subscription", "traffic": "Traffic", "profile": "Profile", "admin": "Admin" },
+  "auth": { "login": "Login", "register": "Register", "logout": "Logout", "email": "Email", "password": "Password" }
+}

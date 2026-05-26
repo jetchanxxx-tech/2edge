@@ -32,40 +32,84 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
+2Edge — 基于 Cloudflare 免费层的多用户代理管理系统。整合了 edgetunnel 的代理能力与 Xboard 的用户管理模型。
 
+### 项目结构
+
+```
+2edge/
+├── workers/           # API Worker (Hono + TypeScript)
+│   └── src/
+│       ├── routes/    # auth, user, subscription, admin/*
+│       ├── services/  # authService, userService
+│       ├── middleware/ # auth, admin, rateLimit
+│       ├── utils/     # jwt, crypto, uuid
+│       └── db/        # D1 migrations
+├── proxy-worker/      # Proxy Worker (edgetunnel core + multiUser patch)
+│   └── src/
+│       ├── core.js    # edgetunnel 原始代码 + 补丁
+│       ├── multiUser.js # 多用户 UUID 缓存 + 流量批处理
+│       └── index.js   # ES Module 入口
+├── frontend/          # React 18 + Ant Design 5 SPA
+│   └── src/
+│       ├── pages/     # Login, Register, Dashboard, Subscription, Profile, Traffic
+│       └── pages/admin/ # AdminDashboard, UserList, UserDetail, Config, AuditLog
+└── CLAUDE.md
+```
 
 ## Tech Stack
 
-- **Backend:** Cloudflare Workers + TypeScript + Hono 框架
+- **API Worker:** Cloudflare Workers + TypeScript + Hono 框架
+- **Proxy Worker:** Cloudflare Workers + JavaScript (edgetunnel fork)
 - **Database:** Cloudflare D1 (SQLite 兼容)
-- **Frontend:** React 18 + TypeScript, Vite, Ant Design 5, i18next
+- **Cache:** Cloudflare KV (速率限制、会话)
+- **Frontend:** React 18 + TypeScript, Vite, Ant Design 5
 - **Auth:** JWT (Web Crypto API, HMAC-SHA256)
-- **测试:** Playwright E2E
+- **Proxy Protocols:** VLESS, Trojan, Shadowsocks (WebSocket 传输)
 
 ## Commands
 
 ```bash
-# Workers 本地开发
-cd workers && npm install && npx wrangler dev --port 8787
+# API Worker 本地开发
+cd workers && npm run dev
 
-# 前端 本地开发 (代理到 :8787)
-cd frontend && npm install && npm run dev
+# Proxy Worker 本地开发
+cd proxy-worker && npm run dev
 
-# 部署 Worker
-cd workers && npx wrangler deploy
-
-# 部署前端
-cd frontend && npm run build && npx wrangler pages deploy dist --project-name=itam-frontend
+# 前端 本地开发 (代理到 :8787, :8788)
+cd frontend && npm run dev
 
 # 数据库迁移
 cd workers && node scripts/migrate.mjs
+
+# 前端构建 + Pages 部署
+cd frontend && npm run build && npx wrangler pages deploy dist --project-name=2edge
+
+# 部署 Workers
+cd workers && npx wrangler deploy
+cd proxy-worker && npx wrangler deploy
 ```
 
 ## Architecture
 
+```
+用户浏览器 (Pages SPA) → api.example.com (API Worker)
+                      → D1 (用户/流量/配置)
+
+v2rayN/Clash 客户端  → proxy.example.com (Proxy Worker)
+                      → D1 (用户缓存/流量写入)
+                      → KV  (速率限制)
+```
 
 ### 数据流
-SPA (React) → REST API (Workers) → D1 (SQLite) + BLOB 存储
+1. 用户通过 Pages SPA 注册/登录 → API Worker 签发 JWT
+2. 管理员通过面板管理用户 → API Worker 操作 D1
+3. 客户端通过 UUID 连接 Proxy Worker → 多用户缓存验证 → TCP 转发
+4. 流量数据内存批处理 → 每 60s 批量写入 D1
 
 ## 安全注意事项
+- 严禁在代码中硬编码密钥，所有密钥通过环境变量或 system_config 表管理
+- JWT Secret 在首次启动时自动生成并持久化到 system_config
+- 密码使用 PBKDF2-SHA256 哈希（10000 迭代，适配 Workers 10ms CPU 限制）
+- 管理员操作记录审计日志 (admin_audit_log 表)
 
