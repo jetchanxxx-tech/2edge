@@ -10,9 +10,9 @@ import { adminAuditRouter } from './routes/admin/audit';
 
 const app = new Hono<{ Bindings: Env }>();
 
-// CORS
+// CORS - allow all origins via callback function
 app.use('*', cors({
-  origin: ['*'],
+  origin: (origin) => origin, // Reflect the request's origin
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   exposeHeaders: ['Subscription-Userinfo', 'Profile-Update-Interval'],
