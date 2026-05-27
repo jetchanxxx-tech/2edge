@@ -41,6 +41,8 @@ async function deployWorker(name, scriptPath, isModule = true) {
     bindings: [
       { type: 'd1', name: 'DB', database_id: D1_ID },
       { type: 'kv_namespace', name: 'KV', namespace_id: KV_ID },
+      { type: 'plain_text', name: 'PROXY_HOST', text: '2edge-proxy.jet-s.workers.dev' },
+      { type: 'plain_text', name: 'PROXY_PATH', text: '/' },
     ],
     compatibility_date: '2026-05-26',
   });

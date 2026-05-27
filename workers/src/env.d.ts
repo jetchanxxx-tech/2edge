@@ -38,4 +38,5 @@ interface Env {
   ENVIRONMENT: string;
   PROXY_HOST?: string;
   PROXY_PATH?: string;
+  SITE_NAME?: string;
 }
