@@ -80,8 +80,8 @@ router.get('/subscription', async (c) => {
       return c.json({ error: { code: 'NOT_FOUND', message: '用户不存在' } }, 404);
     }
 
-    const siteUrl = c.env.SITE_URL || new URL(c.req.url).origin.replace('api.', '');
-    const subUrl = `${siteUrl}/api/v1/sub/${profile.token}`;
+    const origin = new URL(c.req.url).origin;
+    const subUrl = `${origin}/api/v1/sub/${profile.token}`;
 
     return c.json({
       data: {
