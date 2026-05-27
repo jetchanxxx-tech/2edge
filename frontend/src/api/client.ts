@@ -1,4 +1,4 @@
-const API_BASE = '/api/v1';
+const API_BASE = 'https://2edge-api.jet-s.workers.dev/api/v1';
 
 function getToken(): string | null {
   return localStorage.getItem('token');
